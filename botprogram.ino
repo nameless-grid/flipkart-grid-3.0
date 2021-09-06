@@ -49,11 +49,11 @@ void loop()
     if (!client) return; 
     command = checkClient ();
 
-         if (command == "forward" || command == "frente" || command == "a frente")  forwardMotor();
-    else if (command == "reverse" || command == "reverso"|| command == "voltar") reverseMotor();
-    else if (command == "left"    || command == "esquerda") leftMotor();    
-    else if (command == "right"   || command == "direita") rightMotor();     
-    else if (command == "stop"    || command == "pare" || command == "parar" || command == "parando")     stopMotor();     
+         if (command == "forward")  forwardMotor();
+    else if (command == "reverse") reverseMotor();
+    else if (command == "left") leftMotor();    
+    else if (command == "right") rightMotor();     
+    else if (command == "stop")     stopMotor();     
      
 //    sendBackEcho(command); // send command echo back to android device
     command = "";
