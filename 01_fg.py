@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import imutils
+import urllib.request as add
 
 # constraints
 minArea = 10
@@ -11,6 +12,60 @@ path = "resources/path1.png"
 img = cv.imread(path)
 img = cv.resize(img,(647,320))
 imgContour = img.copy()
+
+def currBotPos(bot):
+    botMasked = cv.inRange(hsvImg,np.array(bots[bot][0:3]),np.array(bots[bot][3:6]))
+    botPos = getContours(botMasked)
+
+    print("bot current position")
+    print(botPos)
+    cv.circle(imgContour,botPos,10,(0,0,0),2)
+
+    return botPos
+
+def detectBot(bot):
+    botMasked = cv.inRange(hsvImg,np.array(bots[bot][0:3]),np.array(bots[bot][3:6]))
+    botPos = getContours(botMasked)
+
+    # print("bot position available")
+    # print(bot1Pos,bot2Pos,bot3Pos,bot4Pos)
+
+    botSource = botPos[2]
+    print("bot sources")
+    print(botSource)
+    cv.circle(imgContour,botSource,10,(0,0,0),2)
+    
+    botDest = botPos[0]
+    print("bot destination")
+    print(botDest)
+    cv.circle(imgContour,botDest,10,(0,0,0),2)
+
+    return [botMasked,botPos,botDest]
+
+
+# Bot information
+bots = {
+        "bot1" : [28,0,0,140,255,255],
+        "bot2" : [1,106,0,23,255,255],
+        "bot3" : [24,163,0,179,255,255],
+        "bot4" : [97,0,0,179,255,255]
+    }
+
+bot1 = detectBot('bot1')
+bot1Source = bot1[1]
+bot1Dest = bot1[2]
+
+bot2 = detectBot('bot2')
+bot2Source = bot2[1]
+bot2Dest = bot2[2]
+
+bot3 = detectBot('bot3')
+bot3Source = bot3[1]
+bot3Dest = bot3[2]
+
+bot4 = detectBot('bot4')
+bot4Source = bot4[1]
+bot4Dest = bot4[2]
 
 
 """
@@ -103,52 +158,85 @@ def getContours(img):
 
     return centres
 
-def detectBot():
-    bots = {
-        "bot1" : [28,0,0,140,255,255],
-        "bot2" : [1,106,0,23,255,255],
-        "bot3" : [24,163,0,179,255,255],
-        "bot4" : [97,0,0,179,255,255]
-    }
+def show():
+    imgStack = stackImages(0.6,([img,grayedImg,blurredImg],[canniedImg,imgContour,imgContour]))
+    cv.imshow("stack",imgStack)
 
-    bot1Masked = cv.inRange(hsvImg,np.array(bots['bot1'][0:3]),np.array(bots['bot1'][3:6]))
-    bot2Masked = cv.inRange(hsvImg,np.array(bots['bot2'][0:3]),np.array(bots['bot2'][3:6]))
-    bot3Masked = cv.inRange(hsvImg,np.array(bots['bot3'][0:3]),np.array(bots['bot3'][3:6]))
-    bot4Masked = cv.inRange(hsvImg,np.array(bots['bot4'][0:3]),np.array(bots['bot4'][3:6]))
+def start():
 
-    bot1Pos = getContours(bot1Masked)
-    bot2Pos = getContours(bot2Masked)
-    bot3Pos = getContours(bot3Masked)
-    bot4Pos = getContours(bot4Masked)
+    #bot1
+    move('bot1',1,bot1Dest[1]) #Move bot in y 1 direction
+    turnLeft('bot1')
+    move('bot1',0,bot1Dest[0]) #move bot in x 0 direction
+    initDrop('bot1')
+    stopDrop('bot1')
+    # return back
+    move('bot1',0,bot1Source[1]) #Move bot in y 1 direction
+    turnLeft('bot1')
+    move('bot1',1,bot1Source[0]) #move bot in x 0 direction
 
-    # print("bot position available")
-    # print(bot1Pos,bot2Pos,bot3Pos,bot4Pos)
+    #bot2
+    move('bot2',1,bot2Dest[1]) #Move bot in y 1 direction
+    turnLeft('bot2')
+    move('bot2',0,bot2Dest[0]) #move bot in x 0 direction
+    initDrop('bot2')
+    stopDrop('bot2')
+    # return back
+    move('bot2',0,bot2Source[1]) #Move bot in y 1 direction
+    turnLeft('bot2')
+    move('bot2',1,bot2Source[0]) #move bot in x 0 direction
 
-    bot1Source = bot1Pos[2]
-    bot2Source = bot2Pos[2]
-    bot3Source = bot3Pos[2]
-    bot4Source = bot4Pos[2]
+    #bot3
+    move('bot3',1,bot1Dest[1]) #Move bot in y 1 direction
+    turnLeft('bot3')
+    move('bot3',0,bot1Dest[0]) #move bot in x 0 direction
+    initDrop('bot3')
+    stopDrop('bot3')
+    # return back
+    move('bot3',0,bot1Source[1]) #Move bot in y 1 direction
+    turnLeft('bot3')
+    move('bot3',1,bot1Source[0]) #move bot in x 0 direction
 
-    print("bot sources")
-    print(bot1Source,bot2Source,bot3Source,bot2Source)
-    cv.circle(imgContour,bot1Source,10,(0,0,0),2)
-    cv.circle(imgContour,bot2Source,10,(0,255,0),2)
-    cv.circle(imgContour,bot3Source,10,(0,0,255),2)
-    cv.circle(imgContour,bot4Source,10,(255,0,255),2)
+    #bot4
+    move('bot4',1,bot1Dest[1]) #Move bot in y 1 direction
+    turnLeft('bot4')
+    move('bot4',0,bot1Dest[0]) #move bot in x 0 direction
+    initDrop('bot4')
+    stopDrop('bot4')
+    # return back
+    move('bot4',0,bot1Source[1]) #Move bot in y 1 direction
+    turnLeft('bot4')
+    move('bot4',1,bot1Source[0]) #move bot in x 0 direction
+
     
-    bot1Dest = bot1Pos[0]
-    bot2Dest = bot2Pos[0]
-    bot3Dest = bot3Pos[0]
-    bot4Dest = bot4Pos[0]
 
-    print("bot destination")
-    print(bot1Dest,bot2Dest,bot3Dest,bot4Dest)
-    cv.circle(imgContour,bot1Dest,10,(0,0,0),2)
-    cv.circle(imgContour,bot2Dest,10,(0,255,0),2)
-    cv.circle(imgContour,bot3Dest,10,(0,0,255),2)
-    cv.circle(imgContour,bot4Dest,10,(255,0,255),2)
+def move(bot,axis,destPos):
+    currPos=currBotPos(bot)[axis]
+    while(currPos!=destPos):
+        add.urlopen('http://10.42.0.62/'+ bot +'moveForward')
+        currPos=currBotPos(bot)
+        show()
+    stop()
 
-    return [bot1Masked,bot2Masked,bot3Masked,bot4Masked]
+def turnLeft(bot):
+    add.urlopen('http://10.42.0.62/'+ bot +'turnLeft')
+    show()
+
+def turnRight(bot):
+    add.urlopen('http://10.42.0.62/'+ bot +'turnRight')
+    show()
+
+def stop(bot):
+    add.urlopen('http://10.42.0.62/'+ bot +'stop')
+    show()
+
+def initDrop(bot):
+    add.urlopen('http://10.42.0.62/'+ bot +'initDrop')
+    show()
+
+def stopDrop(bot):
+    add.urlopen('http://10.42.0.62/'+ bot +'stopDrop')
+    show()
 
 
 while True:
@@ -173,13 +261,11 @@ while True:
     print(ll,ul)
     """
 
-    # create masked image
-    bots = detectBot()
+    #Start
+    data = start()
     
     # Displaying all the images
-    # getContours(canniedImg)
-    imgStack = stackImages(0.6,([img,grayedImg,blurredImg],[canniedImg,imgContour,bots[0]],[bots[1],bots[2],bots[3]]))
-    cv.imshow("stack",imgStack)
+    show(data)
 
     # waiting time
     if cv.waitKey(1) & 0xFF == ord('q'):
